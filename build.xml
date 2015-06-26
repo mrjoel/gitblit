@@ -254,9 +254,6 @@
 		<local name="webinf" />
 		<property name="webinf" value="${war.dir}/WEB-INF" />
 
-		<!-- Generate the docs for the WAR build -->
-		<generateDocs toDir="${webinf}/docs" />
-
 		<!-- Prepare the data directory -->
 		<prepareDataDirectory toDir="${webinf}/data" />
 
