@@ -238,7 +238,12 @@
 		Build Gitblit WAR
 		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-->
-	<target name="buildWAR" depends="compile" description="Build Gitblit WAR">
+	<target name="buildWARjar" depends="compile" description="Build Gitblit JAR for WAR">
+		<!-- Gitblit jar -->
+		<mx:jar destfile="${project.outputDirectory}/gitblit-${project.version}.jar" includeresources="false" />
+	</target>
+
+	<target name="buildWAR" depends="buildWARjar" description="Build Gitblit WAR">
 		
 		<echo>Building Gitblit WAR ${project.version}</echo>
 
@@ -260,11 +265,10 @@
 			<replace token="@gb.version@" value="${project.version}" />
 		</mx:webxml>
 
-		<!-- Gitblit jar -->
-		<mx:jar destfile="${webinf}/lib/gitblit-${project.version}.jar" includeresources="false" />
-
 		<!-- Build the WAR file -->
 		<mx:zip basedir="${war.dir}" destfile="${project.targetDirectory}/${distribution.warfile}" compress="true" >
+			<!-- Base jar file -->
+			<zipfileset file="${project.outputDirectory}/gitblit-${project.version}.jar" prefix="WEB-INF/lib" />
 			<!-- Resources in root -->
 			<fileset dir="${project.resources.dir}">
 				<exclude name="thumbs.db" />
@@ -1029,7 +1033,7 @@
     -->
 	<target name="uploadMaven" depends="compile" description="Upload Gitblit JAR to remote Maven repository">
 		<local name="project.jar" />
-		<property name="project.jar" value="${project.outputDirectory}/gitblit.jar" />
+		<property name="project.jar" value="${project.outputDirectory}/gitblit-${project.version}.jar" />
 		<mx:jar destfile="${project.jar}" packageSources="true" includeresources="true" />
 
 		<exec executable="mvn">
