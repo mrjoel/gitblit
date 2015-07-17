@@ -211,7 +211,7 @@ public class GitBlitWebApp extends WebApplication implements GitblitWicketApp {
 		mount("/compare", ComparePage.class, "r", "h");
 		mount("/patch", PatchPage.class, "r", "h", "f");
 		mount("/history", HistoryPage.class, "r", "h", "f");
-		mount("/search", GitSearchPage.class);
+		mount("/search", GitSearchPage.class, "r");
 		mount("/metrics", MetricsPage.class, "r");
 		mount("/blame", BlamePage.class, "r", "h", "f");
 		mount("/users", UsersPage.class);
