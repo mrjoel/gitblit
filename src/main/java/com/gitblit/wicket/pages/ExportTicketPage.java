@@ -15,6 +15,8 @@
  */
 package com.gitblit.wicket.pages;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.wicket.IRequestTarget;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.RequestCycle;
@@ -22,6 +24,7 @@ import org.apache.wicket.protocol.http.WebResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.gitblit.Keys;
 import com.gitblit.models.RepositoryModel;
 import com.gitblit.models.TicketModel;
 import com.gitblit.tickets.TicketSerializer;
@@ -50,18 +53,27 @@ public class ExportTicketPage extends SessionPage {
 			@Override
 			public void respond(RequestCycle requestCycle) {
 				WebResponse response = (WebResponse) requestCycle.getResponse();
+				String content = null;
+				String contentType = null;
 
-				final String repositoryName = WicketUtils.getRepositoryName(params);
-				RepositoryModel repository = app().repositories().getRepositoryModel(repositoryName);
-				String objectId = WicketUtils.getObject(params).toLowerCase();
-				if (objectId.endsWith(".json")) {
-					objectId = objectId.substring(0, objectId.length() - ".json".length());
+				if (app().settings().getBoolean(Keys.tickets.allowExport, true)) {
+					final String repositoryName = WicketUtils.getRepositoryName(params);
+					RepositoryModel repository = app().repositories().getRepositoryModel(repositoryName);
+					String objectId = WicketUtils.getObject(params).toLowerCase();
+					if (objectId.endsWith(".json")) {
+						objectId = objectId.substring(0, objectId.length() - ".json".length());
+					}
+					long id = Long.parseLong(objectId);
+					TicketModel ticket = app().tickets().getTicket(repository, id);
+
+					content = TicketSerializer.serialize(ticket);
+					contentType = "application/json; charset=UTF-8";
+				} else {
+					contentType = "plain/text";
+					content = "Ticket export is not permitted";
+					response.getHttpServletResponse().setStatus(HttpServletResponse.SC_FORBIDDEN);
 				}
-				long id = Long.parseLong(objectId);
-				TicketModel ticket = app().tickets().getTicket(repository, id);
 
-				String content = TicketSerializer.serialize(ticket);
-				contentType = "application/json; charset=UTF-8";
 				response.setContentType(contentType);
 				try {
 					response.getOutputStream().write(content.getBytes("UTF-8"));

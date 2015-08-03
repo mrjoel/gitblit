@@ -222,9 +222,12 @@ public class TicketPage extends RepositoryPage {
 		WicketUtils.setHtmlTooltip(when, tsf.format(ticket.created));
 		add(when);
 
-		String exportHref = urlFor(ExportTicketPage.class, params).toString();
-		add(new ExternalLink("exportJson", exportHref, "json"));
-
+		if (app().settings().getBoolean(Keys.tickets.allowExport, true)) {
+			String exportHref = urlFor(ExportTicketPage.class, params).toString();
+			add(new ExternalLink("exportJson", exportHref, "json"));
+		} else {
+			add(new Label("exportJson").setVisible(false));
+		}
 
 		/*
 		 * RESPONSIBLE (DISCUSSION TAB)
