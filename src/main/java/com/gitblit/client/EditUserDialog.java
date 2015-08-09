@@ -330,7 +330,9 @@ public class EditUserDialog extends JDialog {
 			}
 
 			// change the cookie
-			user.cookie = StringUtils.getSHA1(user.username + password);
+			if (settings.get(Keys.web.allowCookieAuthentication).getBoolean(true)) {
+				user.cookie = StringUtils.getSHA1(user.username + password);
+			}
 
 			String type = settings.get(Keys.realm.passwordStorage).getString("md5");
 			if (type.equalsIgnoreCase("md5")) {

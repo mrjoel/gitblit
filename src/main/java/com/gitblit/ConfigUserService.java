@@ -40,6 +40,7 @@ import com.gitblit.Constants.AccountType;
 import com.gitblit.Constants.Role;
 import com.gitblit.Constants.Transport;
 import com.gitblit.manager.IRuntimeManager;
+import com.gitblit.manager.RuntimeManager;
 import com.gitblit.models.TeamModel;
 import com.gitblit.models.UserModel;
 import com.gitblit.models.UserRepositoryPreferences;
@@ -121,6 +122,8 @@ public class ConfigUserService implements IUserService {
 
 	private volatile boolean forceReload;
 
+	private IRuntimeManager runtimeManager;
+
 	public ConfigUserService(File realmFile) {
 		this.realmFile = realmFile;
 	}
@@ -133,6 +136,7 @@ public class ConfigUserService implements IUserService {
 	 */
 	@Override
 	public void setup(IRuntimeManager runtimeManager) {
+		this.runtimeManager = runtimeManager;
 	}
 
 	/**
@@ -899,9 +903,12 @@ public class ConfigUserService implements IUserService {
 					user.locality = config.getString(USER, username, LOCALITY);
 					user.stateProvince = config.getString(USER, username, STATEPROVINCE);
 					user.countryCode = config.getString(USER, username, COUNTRYCODE);
-					user.cookie = config.getString(USER, username, COOKIE);
-					if (StringUtils.isEmpty(user.cookie) && !StringUtils.isEmpty(user.password)) {
-						user.cookie = StringUtils.getSHA1(user.username + user.password);
+
+					if (this.runtimeManager.getSettings().getBoolean(Keys.web.allowCookieAuthentication, true)) {
+						user.cookie = config.getString(USER, username, COOKIE);
+						if (StringUtils.isEmpty(user.cookie) && !StringUtils.isEmpty(user.password)) {
+							user.cookie = StringUtils.getSHA1(user.username + user.password);
+						}
 					}
 
 					// preferences

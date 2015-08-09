@@ -59,6 +59,7 @@ public class RedmineAuthenticationTest extends GitblitUnitTest {
         assertThat(userModel.getName(), is("redmineadminid"));
         assertThat(userModel.getDisplayName(), is("baz foo"));
         assertThat(userModel.emailAddress, is("baz@example.com"));
+        // What about Redmine functionality depends on the gitblit user cookie, RedmineAuthProvider doesn't explicitly set this anywhere???
         assertNotNull(userModel.cookie);
     }
 
@@ -69,6 +70,7 @@ public class RedmineAuthenticationTest extends GitblitUnitTest {
         assertThat(userModel.getName(), is("redmineadminid"));
         assertThat(userModel.getDisplayName(), is("baz foo"));
         assertThat(userModel.emailAddress, is("baz@example.com"));
+        // What about Redmine functionality depends on the gitblit user cookie, RedmineAuthProvider doesn't explicitly set this anywhere???
         assertNotNull(userModel.cookie);
     }
 }

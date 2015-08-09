@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import com.gitblit.Constants.AccountType;
 import com.gitblit.Constants.Role;
 import com.gitblit.IStoredSettings;
+import com.gitblit.Keys;
 import com.gitblit.manager.IRuntimeManager;
 import com.gitblit.manager.IUserManager;
 import com.gitblit.models.TeamModel;
@@ -74,9 +75,11 @@ public abstract class AuthenticationProvider {
 	}
 
 	protected void setCookie(UserModel user, char [] password) {
-		// create a user cookie
-		if (StringUtils.isEmpty(user.cookie) && !ArrayUtils.isEmpty(password)) {
-			user.cookie = StringUtils.getSHA1(user.username + new String(password));
+		if (settings.getBoolean(Keys.web.allowCookieAuthentication, true)) {
+			// create a user cookie if not yet set
+			if (StringUtils.isEmpty(user.cookie) && !ArrayUtils.isEmpty(password)) {
+				user.cookie = StringUtils.getSHA1(user.username + new String(password));
+			}
 		}
 	}
 
